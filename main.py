@@ -2,6 +2,7 @@ import unittest
 import read, copy
 from logical_classes import *
 from student_code import KnowledgeBase
+import pdb
 
 class KBTest(unittest.TestCase):
 
@@ -31,18 +32,32 @@ class KBTest(unittest.TestCase):
         self.assertEqual(str(answer[1]), "?X : chen")
 
     def test3(self):
-        # Does retract actually retract things 
-        r1 = read.parse_input("fact: (motherof ada bing)")
+        # Does retract actually retract things
+        print('beginning of test 3\n')
+
+        r1 = read.parse_input("fact: (motherof ada bing)") # Asserted only
         print(' Retracting', r1)
+
+        # r1 = read.parse_input("fact: (grandmotherof ada chen)")  # i changed this
+        # print('does this support anything else\n')
+        # print(r1.supports_facts)
+
         self.KB.kb_retract(r1)
         ask1 = read.parse_input("fact: (grandmotherof ada ?X)")
         print(' Asking if', ask1)
         answer = self.KB.kb_ask(ask1)
+
+        print('the bindings returned') #really confused by this
+        print(answer[0])
+        print(answer[1]) #chen's relationship is inferred and should be removed
+
         self.assertEqual(len(answer), 1)
         self.assertEqual(str(answer[0]), "?X : felix")
 
     def test4(self):
         # makes sure retract does not retract supported fact
+        print('beginning of test FOUR \n')
+
         ask1 = read.parse_input("fact: (grandmotherof ada ?X)")
         print(' Asking if', ask1)
         answer = self.KB.kb_ask(ask1)
@@ -55,6 +70,15 @@ class KBTest(unittest.TestCase):
 
         print(' Asking if', ask1)
         answer = self.KB.kb_ask(ask1)
+        print('is it asserted')
+        print(r1.asserted)
+        print('is it supported')
+        print(len(r1.supported_by))
+
+        print('length')
+        print(len(answer))
+        print(answer[0])
+
         self.assertEqual(str(answer[0]), "?X : felix")
         self.assertEqual(str(answer[1]), "?X : chen")
         
@@ -71,6 +95,34 @@ class KBTest(unittest.TestCase):
         answer = self.KB.kb_ask(ask1)
         self.assertEqual(str(answer[0]), "?X : bing")
 
+    def test6(self):
+        # Does fc_infer successfully change supported_by, supports_facts, and supports_rules
+        print('test 6')
+        ask0 = read.parse_input("fact: (parentof ada bing")
+        print(' Asking if', ask0)
+        answer = self.KB.kb_ask(ask0)
+        print(answer[0])
+
+        ask1 = read.parse_input("fact: (grandmotherof ada ?X)")
+        # print(' Asking if', ask1)
+        # answer = self.KB.kb_ask(ask1)
+        # self.assertEqual(str(answer[0]), "?X : felix")
+        # self.assertEqual(str(answer[1]), "?X : chen")
+
+    # def test10(self):
+    #     """this student generated test ensures the inference engine is working at a basic level"""
+    #     ask1 = read.parse_input("fact: (Avenger ?X)")
+    #     print(' Asking if', ask1)
+    #     answer = self.KB.kb_ask(ask1)
+    #     self.assertEqual(str(answer[0]), "?X : profHammond")
+    #     ask2 = read.parse_input("fact: (smart ?X)")
+    #     print(' Asking if', ask2)
+    #     answer = self.KB.kb_ask(ask2)
+    #     self.assertEqual(str(answer[0]), "?X : profHammond")
+    #     ask3 = read.parse_input("fact: (employable ?X)")
+    #     print(' Asking if', ask3)
+    #     answer = self.KB.kb_ask(ask3)
+    #     self.assertEqual(str(answer[0]), "?X : profHammond")
 
 def pprint_justification(answer):
     """Pretty prints (hence pprint) justifications for the answer.
